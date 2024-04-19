@@ -16,6 +16,7 @@ def loadCompetitions():
 
 app = Flask(__name__)
 app.secret_key = 'something_special'
+app.debug = True  # Active le mode debug
 
 competitions = loadCompetitions()
 clubs = loadClubs()

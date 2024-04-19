@@ -44,8 +44,26 @@
 
 5. Testing
 
-    You are free to use whatever testing framework you like-the main thing is that you can show what tests you are using.
+    The GudLift registration project includes several types of automated tests to ensure the application functions as expected.
 
-    We also like to show how well we're testing, so there's a module called 
-    [coverage](https://coverage.readthedocs.io/en/coverage-5.1/) you should add to your project.
+    Each test type targets different layers of the application:
 
+        - Unit tests focus on the smallest parts of code, like functions and methods.
+        - Integration tests verify that different modules or services used by your application interact well.
+        - Functional tests assess the system as a whole, simulating user behavior to see if functionalities meet the specified requirements.
+
+    Before running the tests, activate the virtual environment and install the dependencies:
+
+        ```bash
+        source bin/activate
+        pip install -r requirements.txt
+        ```
+
+    Then, run the following command from the root directory of the project:
+
+        ```bash
+        pytest tests/
+        ```
+
+**Note:** For functional tests involving Selenium, download the GeckoDriver that matches your browser's version and operating system. Place the downloaded geckodriver executable in the `tests/functional` directory. This is required for Selenium to interact with Firefox or other browser during tests.
+After that, ensure the Flask application is running locally. Start the server in a separate terminal using `flask run`.

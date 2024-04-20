@@ -57,6 +57,9 @@ def navigate_to_booking(browser):
 
 @pytest.fixture
 def submit_booking_request(browser):
+    """
+    Provides a function to submit a booking request for a specified number of places.
+    """
     def _submit(places):
         WebDriverWait(browser, 3).until(EC.presence_of_element_located((By.NAME, 'places')))
         place_input = browser.find_element(By.NAME, 'places')
@@ -67,6 +70,10 @@ def submit_booking_request(browser):
 
 @pytest.fixture
 def login(browser):
+    """
+    This fixture simplifies the process of logging into the site by navigating to the home page,
+    waiting for the email input to be present, entering the provided email, and submitting the form.
+    """
     def do_login(email):
         browser.get('http://127.0.0.1:5000')
         WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.NAME, 'email')))

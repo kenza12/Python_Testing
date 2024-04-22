@@ -28,11 +28,11 @@ def test_purchase_places_limitation(client, mock_simply_lift):
     Test to ensure that the booking process doesn't exceed 12 places.
     """
 
-    # Perform POST request to purchase 13 places
     response = client.post('/purchasePlaces', data={
         'club': 'Simply Lift',
         'competition': 'Fall Classic',
-        'places': 13
+        'places': 13  # Requesting more than the allowed limit
     })
-    
+
     assert 'Cannot book more than 12 places per competition' in response.get_data(as_text=True)
+    assert response.status_code == 200, "Expected HTTP status code 200"

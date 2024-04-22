@@ -1,15 +1,14 @@
 import pytest
 
-
 @pytest.mark.parametrize("requested_places, expected_message, expected_status", [
-    (15, 'Not enough points', 200),  # insufficient_points
-    (4, 'Great-booking complete!', 200)  # sufficient_points
+    (5, 'Not enough points', 200),  # insufficient_points
+    (2, 'Great-booking complete!', 200)  # sufficient_points
 ])
 def test_booking(client, mock_competition_and_clubs, requested_places, expected_message, expected_status):
     """
     Test to ensure that the booking process behaves correctly based on club points availability.
     """
-    club_name = 'Simply Lift'
+    club_name = 'Iron Temple'
     competition_name = 'Spring Festival'
 
     # Perform POST request to purchase places
@@ -22,4 +21,3 @@ def test_booking(client, mock_competition_and_clubs, requested_places, expected_
     # Verify the response based on expected outcomes
     assert expected_message in response.get_data(as_text=True), f"Expected message '{expected_message}' not found"
     assert response.status_code == expected_status, f"Expected status code {expected_status}"
-

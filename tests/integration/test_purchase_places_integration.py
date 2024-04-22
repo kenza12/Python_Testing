@@ -2,14 +2,15 @@ import pytest
 
 
 @pytest.mark.parametrize("requested_places, expected_message, expected_status", [
-    (15, 'Not enough points', 200),  # insufficient_points
-    (5, 'Great-booking complete!', 200)  # sufficient_points
+    (5, 'Not enough points', 200),  # insufficient_points
+    (2, 'Great-booking complete!', 200)  # sufficient_points
 ])
+
 def test_booking(client, requested_places, expected_message, expected_status):
     """
     Test integration of the booking process, checking both under and over point limit scenarios.
     """
-    club_name = 'Simply Lift'
+    club_name = 'Iron Temple'
     competition_name = 'Spring Festival'
 
     # Perform POST request to purchase places

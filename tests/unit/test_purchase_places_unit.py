@@ -1,15 +1,14 @@
 import pytest
 
-
 @pytest.mark.parametrize("requested_places, expected_message, expected_status", [
-    (15, 'Not enough points', 200),  # insufficient_points
-    (4, 'Great-booking complete!', 200)  # sufficient_points
+    (5, 'Not enough points', 200),  # insufficient_points
+    (2, 'Great-booking complete!', 200)  # sufficient_points
 ])
-def test_booking(client, mock_competition_and_clubs, requested_places, expected_message, expected_status):
+def test_booking(client, mock_iron_temple, requested_places, expected_message, expected_status):
     """
     Test to ensure that the booking process behaves correctly based on club points availability.
     """
-    club_name = 'Simply Lift'
+    club_name = 'Iron Temple'
     competition_name = 'Spring Festival'
 
     # Perform POST request to purchase places
@@ -23,3 +22,17 @@ def test_booking(client, mock_competition_and_clubs, requested_places, expected_
     assert expected_message in response.get_data(as_text=True), f"Expected message '{expected_message}' not found"
     assert response.status_code == expected_status, f"Expected status code {expected_status}"
 
+
+def test_purchase_places_limitation(client, mock_simply_lift):
+    """
+    Test to ensure that the booking process doesn't exceed 12 places.
+    """
+
+    response = client.post('/purchasePlaces', data={
+        'club': 'Simply Lift',
+        'competition': 'Fall Classic',
+        'places': 13  # Requesting more than the allowed limit
+    })
+
+    assert 'Cannot book more than 12 places per competition' in response.get_data(as_text=True)
+    assert response.status_code == 200, "Expected HTTP status code 200"

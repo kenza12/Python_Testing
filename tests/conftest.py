@@ -5,27 +5,49 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pytest
-from server import app as flask_app
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from server import app as flask_app
+from flask_testing import LiveServerTestCase
+from selenium import webdriver
 
-@pytest.fixture(scope='module')
+# Test Server
+BASE_URL = 'http://127.0.0.1:8943/'
+
+class CustomLiveServerTestCase(LiveServerTestCase):
+    """A customized live server test case class for handling integration tests with Selenium."""
+    def create_app(self):
+        """Set up application configuration specifically for testing."""
+        flask_app.config.update({
+            'TESTING': True,
+            'LIVESERVER_PORT': 8943,
+            'FLASK_ENV': 'development',
+            'SECRET_KEY': 'verysecret',
+            'SERVER_NAME': 'localhost.localdomain:8943',
+            'CLUBS_DATA_PATH': 'tests/data/test_clubs.json',
+            'COMPETITIONS_DATA_PATH': 'tests/data/test_competitions.json'
+        })
+        return flask_app
+
+    def setUp(self):
+        """Initialize the WebDriver before each test."""
+        self.driver = webdriver.Firefox()
+
+    def tearDown(self):
+        """Close the WebDriver after each test."""
+        self.driver.quit()
+
+
+@pytest.fixture(scope='function')
 def app():
-    """Creates and configures a new app instance for testing."""
-    flask_app.config.update({
-        'TESTING': True,
-        'DEBUG': True,
-        'FLASK_ENV': 'development',
-        'SECRET_KEY': 'verysecret',
-        'SERVER_NAME': 'localhost.localdomain:5000'
-    })
-    return flask_app
+    """Fixture to configure the Flask application for tests without starting the server."""
+    return CustomLiveServerTestCase().create_app()
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def client(app):
-    """Provides a test client for the Flask application."""
+    """Provide a test client for the application configured for testing."""
     return app.test_client()
 
 @pytest.fixture(scope='module')
@@ -39,12 +61,21 @@ def browser():
     driver.quit()
 
 @pytest.fixture
-def mock_competition_and_clubs(mocker):
-    """Prepare and inject mocked club and competition data into the server context."""
-    mocked_clubs = [{'name': 'Simply Lift', 'email': 'john@simplylift.co', 'points': 10}]
+def mock_iron_temple(mocker):
+    """Prepare and inject mocked club (Iron Temple) and competition data (Spring Festival)"""
+    mocked_clubs = [{'name': 'Iron Temple', 'email': 'admin@irontemple.com', 'points': 4}]
     mocker.patch('server.clubs', new=mocked_clubs)
 
     mocked_competitions = [{'name': 'Spring Festival', 'numberOfPlaces': 5}]
+    mocker.patch('server.competitions', new=mocked_competitions)
+
+@pytest.fixture
+def mock_simply_lift(mocker):
+    """Prepare and inject mocked club (Simply Lift) and competition data (Fall Classic)"""
+    mocked_clubs = [{'name': 'Simply Lift', 'email': 'john@simplylift.co', 'points': 24}]
+    mocker.patch('server.clubs', new=mocked_clubs)
+
+    mocked_competitions = [{'name': 'Fall Classic', 'numberOfPlaces': 30}]
     mocker.patch('server.competitions', new=mocked_competitions)
 
 @pytest.fixture
@@ -75,7 +106,7 @@ def login(browser):
     waiting for the email input to be present, entering the provided email, and submitting the form.
     """
     def do_login(email):
-        browser.get('http://127.0.0.1:5000')
+        browser.get(BASE_URL)
         WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.NAME, 'email')))
         email_input = browser.find_element(By.NAME, 'email')
         email_input.send_keys(email)

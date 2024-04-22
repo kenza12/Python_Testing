@@ -61,12 +61,21 @@ def browser():
     driver.quit()
 
 @pytest.fixture
-def mock_competition_and_clubs(mocker):
-    """Prepare and inject mocked club and competition data into the server context."""
+def mock_iron_temple(mocker):
+    """Prepare and inject mocked club (Iron Temple) and competition data (Spring Festival)"""
     mocked_clubs = [{'name': 'Iron Temple', 'email': 'admin@irontemple.com', 'points': 4}]
     mocker.patch('server.clubs', new=mocked_clubs)
 
     mocked_competitions = [{'name': 'Spring Festival', 'numberOfPlaces': 5}]
+    mocker.patch('server.competitions', new=mocked_competitions)
+
+@pytest.fixture
+def mock_simply_lift(mocker):
+    """Prepare and inject mocked club (Simply Lift) and competition data (Fall Classic)"""
+    mocked_clubs = [{'name': 'Simply Lift', 'email': 'john@simplylift.co', 'points': 24}]
+    mocker.patch('server.clubs', new=mocked_clubs)
+
+    mocked_competitions = [{'name': 'Fall Classic', 'numberOfPlaces': 30}]
     mocker.patch('server.competitions', new=mocked_competitions)
 
 @pytest.fixture

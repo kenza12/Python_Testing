@@ -10,6 +10,7 @@ def test_show_summary_valid_email(client):
 
 
 def test_show_summary_invalid_email(client):
+    """Test the /showSummary route with an invalid email."""
     with client.application.app_context():
         response = client.post('/showSummary', data={'email': 'nonexistentemail@test.com'})
         assert response.status_code == 302

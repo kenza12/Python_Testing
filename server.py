@@ -1,5 +1,8 @@
-from flask import current_app, Flask, render_template, request, redirect, flash, url_for
+from flask import current_app, Flask, render_template, request, redirect, flash, url_for, make_response
 import json
+from datetime import datetime
+import os
+
 
 def loadClubs():
     """Load club data from the JSON file"""
@@ -17,9 +20,13 @@ app = Flask(__name__)
 app.secret_key = 'something_special'
 app.debug = True
 
-# Default paths for data files
-app.config['CLUBS_DATA_PATH'] = 'clubs.json'
-app.config['COMPETITIONS_DATA_PATH'] = 'competitions.json'
+# Set paths for data files based on the environment
+if os.getenv('FLASK_ENV') == 'testing':
+    app.config['CLUBS_DATA_PATH'] = 'tests/data/test_clubs.json'
+    app.config['COMPETITIONS_DATA_PATH'] = 'tests/data/test_competitions.json'
+else:
+    app.config['CLUBS_DATA_PATH'] = 'clubs.json'
+    app.config['COMPETITIONS_DATA_PATH'] = 'competitions.json'
 
 with app.app_context():
     competitions = loadCompetitions()
@@ -39,7 +46,6 @@ def showSummary():
     except IndexError:
         flash("Sorry, that email wasn't found.")
         return redirect(url_for('index'))
-
 
 @app.route('/book/<competition>/<club>')
 def book(competition,club):
@@ -63,15 +69,21 @@ def purchasePlaces():
     club_points = int(club['points'])
     competition_places = int(competition['numberOfPlaces'])
 
+    # Cannot book places for past competitions
+    if 'date' in competition:
+        competition_date = datetime.strptime(competition['date'], '%Y-%m-%d %H:%M:%S')
+        if competition_date < datetime.now():
+            return make_response(render_template('booking.html', club=club, competition=competition, error='Cannot book places for past competitions'), 400)
+
     # Cannot book more than 12 places
     if placesRequired > 12:
-        flash('Cannot book more than 12 places per competition', 'error')
-        return render_template('welcome.html', club=club, competitions=competitions)
+        response = make_response(render_template('welcome.html', club=club, competition=competition, error='Cannot book more than 12 places per competition'), 400)
+        return response
 
     # Cannot use more than points allowed
     if placesRequired > club_points:
-        flash('Not enough points', 'error')
-        return render_template('welcome.html', club=club, competitions=competitions)
+        response = make_response(render_template('welcome.html', club=club, competition=competition, error='Not enough points'), 400)
+        return response
 
     competition['numberOfPlaces'] = competition_places - placesRequired
     club['points'] = str(club_points - placesRequired)

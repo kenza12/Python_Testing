@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import datetime
 
 # Set the path to include the root directory for easy imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -23,7 +24,7 @@ class CustomLiveServerTestCase(LiveServerTestCase):
         flask_app.config.update({
             'TESTING': True,
             'LIVESERVER_PORT': 8943,
-            'FLASK_ENV': 'development',
+            'FLASK_ENV': 'testing',
             'SECRET_KEY': 'verysecret',
             'SERVER_NAME': 'localhost.localdomain:8943',
             'CLUBS_DATA_PATH': 'tests/data/test_clubs.json',
@@ -76,6 +77,19 @@ def mock_simply_lift(mocker):
     mocker.patch('server.clubs', new=mocked_clubs)
 
     mocked_competitions = [{'name': 'Fall Classic', 'numberOfPlaces': 30}]
+    mocker.patch('server.competitions', new=mocked_competitions)
+
+@pytest.fixture
+def mock_iron_temple_with_past_competition(mocker):
+    """Prepare and inject mocked club (Iron Temple) and competition data with a past competition."""
+    mocked_clubs = [{'name': 'Iron Temple', 'email': 'admin@irontemple.com', 'points': 4}]
+    mocker.patch('server.clubs', new=mocked_clubs)
+
+    past_date = datetime(2020, 5, 15, 10, 0, 0)
+    mocked_competitions = [
+        {'name': 'Spring Festival', 'numberOfPlaces': 5, 'date': '2026-03-27 10:00:00'},
+        {'name': 'Historic Match', 'numberOfPlaces': 10, 'date': past_date.strftime('%Y-%m-%d %H:%M:%S')}
+    ]
     mocker.patch('server.competitions', new=mocked_competitions)
 
 @pytest.fixture

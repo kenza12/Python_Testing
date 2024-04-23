@@ -2,7 +2,7 @@ import pytest
 
 
 @pytest.mark.parametrize("requested_places, expected_message, expected_status", [
-    (5, 'Not enough points', 200),  # insufficient_points
+    (5, 'Not enough points', 400),  # insufficient_points
     (2, 'Great-booking complete!', 200)  # sufficient_points
 ])
 
@@ -36,4 +36,19 @@ def test_purchase_places_limitation(client):
     })
 
     assert 'Cannot book more than 12 places per competition' in response.get_data(as_text=True)
-    assert response.status_code == 200, "Expected HTTP status code 200"
+    assert response.status_code == 400, "Expected HTTP status code 400"
+
+
+def test_purchase_places_for_past_competition(client):
+    """
+    Verify that the application does not allow a booking of past competition.
+    """
+    response = client.post('/purchasePlaces', data={
+        'club': 'Iron Temple',
+        'competition': 'Historic Match',
+        'places': '5'
+    })
+
+    # Check that the booking was not allowed
+    assert 'Cannot book places for past competitions' in response.get_data(as_text=True), "Booking for past competition should not be allowed"
+    assert response.status_code == 400, "Expected status code 400 for booking past competition"

@@ -47,3 +47,37 @@ def test_purchase_places_limitation(browser, login, navigate_to_booking, submit_
     except TimeoutException:
         print("TimeoutException caught. Error message did not appear.")
         assert False, "Error message did not appear within the expected time."
+    
+
+def test_purchase_places_past_competition(browser, login, submit_booking_request):
+    """test to attempt booking places for a past competition and expect to fail."""
+    # Log in first
+    login('admin@irontemple.com')
+
+    # Wait for the entire list of competitions to be visible
+    WebDriverWait(browser, 10).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "ul"))
+    )
+
+    # Find the list item for 'Historic Match'
+    historic_match_li = browser.find_element(By.XPATH, "//li[contains(., 'Historic Match')]")
+    
+    # Within this list item, click the 'Book Places' link
+    book_places_link = historic_match_li.find_element(By.LINK_TEXT, 'Book Places')
+    book_places_link.click()
+
+    # Use the submit_booking_request to attempt booking one place
+    submit_booking_request(1)
+
+    # Check for the error message indicating booking cannot be made for past competitions
+    try:
+        WebDriverWait(browser, 5).until(
+            EC.text_to_be_present_in_element(
+                (By.TAG_NAME, 'body'), "Cannot book places for past competitions"
+            )
+        )
+        assert "Cannot book places for past competitions" in browser.page_source, \
+            "Should display a message about past competitions"
+    except TimeoutException:
+        print("TimeoutException caught. Error message did not appear.")
+        assert False, "Error message did not appear within the expected time."

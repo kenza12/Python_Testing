@@ -86,7 +86,10 @@ def purchasePlaces():
         return response
 
     competition['numberOfPlaces'] = competition_places - placesRequired
+
+    # The amount of points is deducted from the club's balance.
     club['points'] = str(club_points - placesRequired)
+    
     flash('Great-booking complete!')
     
     return render_template('welcome.html', club=club, competitions=competitions)

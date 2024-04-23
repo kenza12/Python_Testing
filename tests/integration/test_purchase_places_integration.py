@@ -2,7 +2,7 @@ import pytest
 
 
 @pytest.mark.parametrize("requested_places, expected_message, expected_status", [
-    (5, 'Not enough points', 200),  # insufficient_points
+    (5, 'Not enough points', 400),  # insufficient_points
     (2, 'Great-booking complete!', 200)  # sufficient_points
 ])
 
@@ -36,4 +36,4 @@ def test_purchase_places_limitation(client):
     })
 
     assert 'Cannot book more than 12 places per competition' in response.get_data(as_text=True)
-    assert response.status_code == 200, "Expected HTTP status code 200"
+    assert response.status_code == 400, "Expected HTTP status code 400"

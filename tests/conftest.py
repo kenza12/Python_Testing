@@ -1,6 +1,7 @@
 import os
 import sys
 from datetime import datetime
+import shutil
 
 # Set the path to include the root directory for easy imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -40,11 +41,39 @@ class CustomLiveServerTestCase(LiveServerTestCase):
         """Close the WebDriver after each test."""
         self.driver.quit()
 
+@pytest.fixture(scope='session', autouse=True)
+def backup_and_restore_data():
+    # Locations of the original data files and their backups
+    clubs_data_path = flask_app.config['CLUBS_DATA_PATH']
+    competitions_data_path = flask_app.config['COMPETITIONS_DATA_PATH']
+    backup_clubs_data_path = clubs_data_path + '.bak'
+    backup_competitions_data_path = competitions_data_path + '.bak'
+
+    # Backup the original files
+    shutil.copy(clubs_data_path, backup_clubs_data_path)
+    shutil.copy(competitions_data_path, backup_competitions_data_path)
+
+    # Let the tests run
+    yield
+
+    # Restore the original files
+    shutil.copy(backup_clubs_data_path, clubs_data_path)
+    shutil.copy(backup_competitions_data_path, competitions_data_path)
+
+    # Delete the backup files
+    os.remove(backup_clubs_data_path)
+    os.remove(backup_competitions_data_path)
 
 @pytest.fixture(scope='function')
 def app():
     """Fixture to configure the Flask application for tests without starting the server."""
     return CustomLiveServerTestCase().create_app()
+
+@pytest.fixture(scope="function")
+def app_context(app):
+    """Create an application context before each test."""
+    with app.app_context():
+        yield
 
 @pytest.fixture(scope='function')
 def client(app):
@@ -90,6 +119,21 @@ def mock_iron_temple_with_past_competition(mocker):
         {'name': 'Spring Festival', 'numberOfPlaces': 5, 'date': '2026-03-27 10:00:00'},
         {'name': 'Historic Match', 'numberOfPlaces': 10, 'date': past_date.strftime('%Y-%m-%d %H:%M:%S')}
     ]
+    mocker.patch('server.competitions', new=mocked_competitions)
+
+@pytest.fixture
+def mock_load_clubs(mocker):
+    """Mock the loadClubs function to simulate club data after a booking."""
+    clubs_data = [{'name': 'Energy Club', 'email': 'contact@energyclub.com', 'points': 10}]
+    return mocker.patch('server.loadClubs', return_value=clubs_data)
+
+@pytest.fixture
+def mock_energy_club(mocker):
+    """Prepare and inject mocked club (Energy Club) and competition data (Energy Open)"""
+    mocked_clubs = [{'name': 'Energy Club', 'email': 'contact@energyclub.com', 'points': 15}]
+    mocker.patch('server.clubs', new=mocked_clubs)
+
+    mocked_competitions = [{'name': 'Energy Open', 'numberOfPlaces': 25}]
     mocker.patch('server.competitions', new=mocked_competitions)
 
 @pytest.fixture

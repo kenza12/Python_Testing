@@ -54,7 +54,6 @@ def test_purchase_places_for_past_competition(client):
     assert response.status_code == 400, "Expected status code 400 for booking past competition"
 
 
-
 def test_purchase_places_deduct_points(client, app_context):
     """
     Verify that points are correctly deducted from a club's total when booking places for a competition in an integration test setting.

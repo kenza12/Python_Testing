@@ -81,3 +81,40 @@ def test_purchase_places_past_competition(browser, login, submit_booking_request
     except TimeoutException:
         print("TimeoutException caught. Error message did not appear.")
         assert False, "Error message did not appear within the expected time."
+
+
+def test_purchase_places_deduct_point(browser, login, submit_booking_request):
+    """Functional test to verify point deduction when booking places for a competition."""
+    # Log in with 'She Lifts' credentials
+    login('kate@shelifts.co.uk')
+
+    # Find the line containing the points information before booking
+    WebDriverWait(browser, 5).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "body"))
+    )
+    body_text = browser.find_element(By.TAG_NAME, 'body').text
+    points_line = next(line for line in body_text.split('\n') if 'Points available:' in line)
+    points_before = int(points_line.split(': ')[1])
+
+    # Find the 'Deducted Festival' competition and initiate booking
+    deducted_festival_li = browser.find_element(By.XPATH, "//li[contains(., 'Deducted Festival')]")
+    book_places_link = deducted_festival_li.find_element(By.LINK_TEXT, 'Book Places')
+    book_places_link.click()
+
+    # Submit the booking request for 2 places
+    submit_booking_request(2)
+
+    # Confirm that the booking was successful
+    WebDriverWait(browser, 5).until(
+        EC.text_to_be_present_in_element((By.TAG_NAME, 'body'), "Great-booking complete!")
+    )
+    assert "Great-booking complete!" in browser.page_source, "Booking should be confirmed as successful"
+
+    # Extract the updated body text and points
+    updated_body_text = browser.find_element(By.TAG_NAME, 'body').text
+    points_line_after = next(line for line in updated_body_text.split('\n') if 'Points available:' in line)
+    points_after = int(points_line_after.split(': ')[1])
+
+    # Check if the points have been correctly deducted
+    expected_points = points_before - 2  # Assuming 2 points are deducted per booking
+    assert points_after == expected_points, f"Points should be deducted correctly, expected {expected_points}, got {points_after}"

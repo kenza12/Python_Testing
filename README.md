@@ -48,7 +48,7 @@ source bin/activate
 pip install -r requirements.txt
 ```
 
-To ensure that both the tests and the local Flask server function correctly, you need to set the FLASK_APP environment variable to point to the main Flask application file.
+To ensure that both the tests and the local Flask server function correctly, you need to set the **FLASK_APP** environment variable to point to the main Flask application file.
 
 ```bash
 # On Linux/MacOS:
@@ -58,7 +58,17 @@ export FLASK_APP=server.py
 set FLASK_APP=server.py
 ```
 
-After that, ensure the Flask application is running locally. Start the test server in a separate terminal using `flask run --port 8943`.
+Also, set the testing environment by configuring the **FLASK_ENV** variable to `testing`:
+
+```bash
+# On Linux/MacOS:
+export FLASK_ENV=testing
+
+# On Windows:
+set FLASK_ENV=testing
+```
+
+After setting up the environment, ensure the Flask application is running locally. Start the test server in a separate terminal using `flask run --port 8943`.
 
 Then, run the following command from the root directory of the project:
 

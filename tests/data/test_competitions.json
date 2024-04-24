@@ -3,7 +3,7 @@
         {
             "name": "Spring Festival",
             "date": "2026-03-27 10:00:00",
-            "numberOfPlaces": "25"
+            "numberOfPlaces": 23
         },
         {
             "name": "Fall Classic",
@@ -14,6 +14,11 @@
             "name": "Historic Match",
             "date": "2020-05-15 09:30:00",
             "numberOfPlaces": "20"
+        },
+        {
+            "name": "Deducted Festival",
+            "date": "2027-04-28 10:00:00",
+            "numberOfPlaces": 23
         }
     ]
 }

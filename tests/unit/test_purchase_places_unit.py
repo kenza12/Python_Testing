@@ -1,4 +1,5 @@
 import pytest
+import server
 
 @pytest.mark.parametrize("requested_places, expected_message, expected_status", [
     (5, 'Not enough points', 400),  # insufficient_points
@@ -49,3 +50,34 @@ def test_purchase_places_past_competition(client, mock_iron_temple_with_past_com
     
     assert 'Cannot book places for past competitions' in response.get_data(as_text=True)
     assert response.status_code == 400  # Expected HTTP status code 400
+
+
+def test_purchase_places_deduct_points(client, mock_energy_club, mock_load_clubs):
+    """
+    Verify that points are correctly deducted from a club's total when booking places for a competition.
+    
+    Args:
+        client (Flask test client): The test client for making requests.
+        mock_energy_club (fixture): Mocks the club data for Energy Club.
+        mock_load_clubs (fixture): Mocks the loadClubs function to simulate updated club data.
+    """
+    club_name = 'Energy Club'
+    competition_name = 'Energy Open'
+    places_to_book = 5
+    expected_points_after_booking = 10  # Expected points after booking 5 places
+
+    # Perform the booking
+    client.post('/purchasePlaces', data={
+        'club': club_name,
+        'competition': competition_name,
+        'places': places_to_book
+    })
+
+    # Fetch updated club data
+    updated_clubs = server.loadClubs()
+    club = next((c for c in updated_clubs if c['name'] == club_name), None)
+
+    # Assert the points are deducted correctly
+    assert club is not None, "The club should be found in the list."
+    assert int(club['points']) == expected_points_after_booking, "The points should be deducted correctly after booking."
+

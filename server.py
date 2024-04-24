@@ -16,6 +16,14 @@ def loadCompetitions():
         listOfCompetitions = json.load(comps)['competitions']
         return listOfCompetitions
 
+def save_data(clubs, competitions):
+    """Save updated clubs and competitions data to their respective JSON files."""
+    with open(current_app.config['CLUBS_DATA_PATH'], 'w') as c:
+        json.dump({'clubs': clubs}, c, indent=4)
+    
+    with open(current_app.config['COMPETITIONS_DATA_PATH'], 'w') as c:
+        json.dump({'competitions': competitions}, c, indent=4)
+
 app = Flask(__name__)
 app.secret_key = 'something_special'
 app.debug = True
@@ -86,7 +94,13 @@ def purchasePlaces():
         return response
 
     competition['numberOfPlaces'] = competition_places - placesRequired
+
+    # The amount of points is deducted from the club's balance.
     club['points'] = str(club_points - placesRequired)
+
+    # save updates
+    save_data(clubs, competitions)
+    
     flash('Great-booking complete!')
     
     return render_template('welcome.html', club=club, competitions=competitions)

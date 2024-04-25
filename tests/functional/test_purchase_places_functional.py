@@ -54,16 +54,16 @@ def test_purchase_places_past_competition(browser, login, submit_booking_request
     # Log in first
     login('admin@irontemple.com')
 
-    # Wait for the entire list of competitions to be visible
+    # Wait for the table of competitions to be visible
     WebDriverWait(browser, 10).until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, "ul"))
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "table"))
     )
 
-    # Find the list item for 'Historic Match'
-    historic_match_li = browser.find_element(By.XPATH, "//li[contains(., 'Historic Match')]")
+    # Find the row for 'Historic Match'
+    historic_match_row = browser.find_element(By.XPATH, "//tr[td[contains(text(), 'Historic Match')]]")
     
-    # Within this list item, click the 'Book Places' link
-    book_places_link = historic_match_li.find_element(By.LINK_TEXT, 'Book Places')
+    # Within this row, click the 'Book Places' link
+    book_places_link = historic_match_row.find_element(By.LINK_TEXT, 'Book Places')
     book_places_link.click()
 
     # Use the submit_booking_request to attempt booking one place
@@ -97,8 +97,8 @@ def test_purchase_places_deduct_point(browser, login, submit_booking_request):
     points_before = int(points_line.split(': ')[1])
 
     # Find the 'Deducted Festival' competition and initiate booking
-    deducted_festival_li = browser.find_element(By.XPATH, "//li[contains(., 'Deducted Festival')]")
-    book_places_link = deducted_festival_li.find_element(By.LINK_TEXT, 'Book Places')
+    deducted_festival_row = browser.find_element(By.XPATH, "//tr[td[contains(text(), 'Deducted Festival')]]")
+    book_places_link = deducted_festival_row.find_element(By.LINK_TEXT, 'Book Places')
     book_places_link.click()
 
     # Submit the booking request for 2 places

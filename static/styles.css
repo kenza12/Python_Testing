@@ -1,0 +1,12 @@
+body {
+    filter: grayscale(100%); /* Apply a gray filter to the page */
+    background-color: #e9ecef; /* Light gray background for the whole page */
+    padding-top: 20px;
+}
+
+.container {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect */
+    background-color: #ffffff; /* White background for the content area */
+    border-radius: 25px; /* rounded corners */
+    padding: 2rem;
+}

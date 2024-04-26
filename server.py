@@ -84,29 +84,31 @@ def purchasePlaces():
         if competition_date < datetime.now():
             return make_response(render_template('booking.html', club=club, competition=competition, error='Cannot book places for past competitions'), 400)
 
+    # Cannot book more places than available
+    if placesRequired > competition_places:
+        error_message = "Cannot book more places than are available."
+        return make_response(render_template('booking.html', club=club, competition=competition, error=error_message), 400)
+
     # Cannot book more than 12 places
     if placesRequired > 12:
-        response = make_response(render_template('welcome.html', club=club, competition=competition, error='Cannot book more than 12 places per competition'), 400)
+        response = make_response(render_template('booking.html', club=club, competition=competition, error='Cannot book more than 12 places per competition'), 400)
         return response
 
     # Cannot use more than points allowed
     if placesRequired > club_points:
-        response = make_response(render_template('welcome.html', club=club, competition=competition, error='Not enough points'), 400)
+        response = make_response(render_template('booking.html', club=club, competition=competition, error='Not enough points'), 400)
         return response
 
+    # All checks passed, proceed with booking
     competition['numberOfPlaces'] = competition_places - placesRequired
-
-    # The amount of points is deducted from the club's balance.
     club['points'] = str(club_points - placesRequired)
 
-    # save updates
+    # Save updates
     save_data(clubs, competitions)
     
     flash('Great-booking complete!')
     
     return render_template('welcome.html', club=club, competitions=competitions)
-
-# TODO: Add route for points display
 
 @app.route('/logout')
 def logout():

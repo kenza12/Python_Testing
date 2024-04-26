@@ -81,3 +81,15 @@ def test_purchase_places_deduct_points(client, mock_energy_club, mock_load_clubs
     assert club is not None, "The club should be found in the list."
     assert int(club['points']) == expected_points_after_booking, "The points should be deducted correctly after booking."
 
+
+def test_purchase_places_exceeding_available_places(client, mock_availability_limitation):
+    """Test to ensure that booking more places than available results in an error."""
+    
+    response = client.post('/purchasePlaces', data={
+        'club': 'Simply Lift',
+        'competition': 'Avail Festival',
+        'places': 5  # Attempting to book more places than available
+    })
+
+    assert response.status_code == 400
+    assert 'Cannot book more places than are available.' in response.get_data(as_text=True)

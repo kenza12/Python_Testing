@@ -1,5 +1,5 @@
 import pytest
-from server import loadClubs
+from server import loadClubs, loadCompetitions
 
 @pytest.mark.parametrize("requested_places, expected_message, expected_status", [
     (5, 'Not enough points', 400),  # insufficient_points
@@ -89,4 +89,35 @@ def test_purchase_places_deduct_points(client, app_context):
     # Assert the points are deducted correctly
     assert updated_club is not None, "The club should be found in the list."
     assert int(updated_club['points']) == expected_points_after_booking, "The points should be deducted correctly after booking."
+
+
+def test_purchase_places_exceeding_available_places(client, app_context):
+    """
+    Verify that the application does not allow booking more places than are available in a competition.
+    """
+    club_name = 'Simply Lift'  # Club with sufficient points
+    competition_name = 'Avail Festival'  # Competition with only 4 places available
+    places_to_book = 5  # Requesting more places than available
+    
+    # Fetch initial state for comparison and debugging
+    initial_competitions = loadCompetitions()
+    initial_competition = next((comp for comp in initial_competitions if comp['name'] == competition_name), None)
+    initial_places = int(initial_competition['numberOfPlaces'])
+
+    # Perform the booking
+    response = client.post('/purchasePlaces', data={
+        'club': club_name,
+        'competition': competition_name,
+        'places': places_to_book
+    })
+
+    # Fetch updated state to check if places have been incorrectly deducted
+    updated_competitions = loadCompetitions()
+    updated_competition = next((comp for comp in updated_competitions if comp['name'] == competition_name), None)
+    updated_places = int(updated_competition['numberOfPlaces'])
+
+    # The places should not have been deducted, as the booking request was over the available limit
+    assert response.status_code == 400, "Expected HTTP status code 400 for booking more places than available"
+    assert 'Cannot book more places than are available.' in response.get_data(as_text=True), "Expected error message for booking too many places"
+    assert updated_places == initial_places, "The number of available places should not have changed"
 

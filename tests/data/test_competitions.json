@@ -8,7 +8,7 @@
         {
             "name": "Fall Classic",
             "date": "2026-10-22 13:30:00",
-            "numberOfPlaces": "13"
+            "numberOfPlaces": "23"
         },
         {
             "name": "Historic Match",
@@ -19,6 +19,11 @@
             "name": "Deducted Festival",
             "date": "2027-04-28 10:00:00",
             "numberOfPlaces": "23"
+        },
+        {
+            "name": "Avail Festival",
+            "date": "2027-10-27 11:00:00",
+            "numberOfPlaces": "4"
         }
     ]
 }

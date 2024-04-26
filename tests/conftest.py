@@ -137,6 +137,14 @@ def mock_energy_club(mocker):
     mocker.patch('server.competitions', new=mocked_competitions)
 
 @pytest.fixture
+def mock_availability_limitation(mocker):
+    """Setup mocked data for a specific competition and club to test availability limitations."""
+    mocked_clubs = [{'name': 'Simply Lift', 'email': 'john@simplylift.co', 'points': '13'}]
+    mocked_competitions = [{'name': 'Avail Festival', 'date': '2027-10-27 11:00:00', 'numberOfPlaces': '4'}]
+    mocker.patch('server.clubs', new=mocked_clubs)
+    mocker.patch('server.competitions', new=mocked_competitions)
+
+@pytest.fixture
 def navigate_to_booking(browser):
     """Navigates to the booking page after logging in."""
     def _navigate():

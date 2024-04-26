@@ -118,3 +118,34 @@ def test_purchase_places_deduct_point(browser, login, submit_booking_request):
     # Check if the points have been correctly deducted
     expected_points = points_before - 2  # Assuming 2 points are deducted per booking
     assert points_after == expected_points, f"Points should be deducted correctly, expected {expected_points}, got {points_after}"
+
+
+def test_purchase_places_exceeding_available_places(browser, login, submit_booking_request):
+    """
+    Functional test to verify that users cannot book more places than available in the 'Avail Festival'
+    """
+    # Logging in with credentials that should have access to the booking
+    login('john@simplylift.co')
+
+    # Navigate directly to the booking page for 'Avail Festival'
+    WebDriverWait(browser, 5).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "table"))
+    )
+    # Find the competition 'Avail Festival' and navigate to its booking page
+    festival_link = browser.find_element(By.XPATH, "//tr[td[contains(text(), 'Avail Festival')]]/td/a[contains(text(), 'Book Places')]")
+    festival_link.click()
+
+    # Attempt to book 5 places, which is more than available
+    submit_booking_request(5)
+
+    # Check for error message
+    try:
+        WebDriverWait(browser, 5).until(
+            EC.text_to_be_present_in_element(
+                (By.TAG_NAME, 'body'),
+                "Cannot book more places than are available."
+            )
+        )
+        assert "Cannot book more places than are available." in browser.page_source, "Should display a message about booking limitations"
+    except TimeoutException:
+        assert False, "Error message did not appear when trying to book more places than available."

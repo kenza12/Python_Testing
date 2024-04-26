@@ -42,8 +42,9 @@ with app.app_context():
 
 @app.route('/')
 def index():
-    """Render the main page."""
-    return render_template('index.html')
+    """Render the main page with the club points table."""
+    clubs = loadClubs()
+    return render_template('index.html', clubs=clubs)
 
 @app.route('/showSummary',methods=['POST'])
 def showSummary():

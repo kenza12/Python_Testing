@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} | GUDLFT Registration</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container shadow mb-5 bg-white">
+        <header class="mb-4">
+            <h1>{% block header %}{% endblock %}</h1>
+            {% if show_logout %}
+                <nav>
+                    <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm">Logout</a>
+                </nav>
+            {% endif %}
+        </header>
+
+        {% block errors %}
+            {% if error %}
+                <div class="alert alert-danger" role="alert">{{ error }}</div>
+            {% endif %}
+        {% endblock %}
+
+        {% block messages %}
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="alert alert-warning" role="alert">
+                        {% for message in messages %}
+                            {{ message }}<br>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        {% endblock %}
+
+        {% block content %}{% endblock %}
+
+        <footer class="mt-4">
+            <p>&copy; 2024 GUDLFT Registration System</p>
+        </footer>
+    </div>
+</body>
+</html>

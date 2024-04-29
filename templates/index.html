@@ -1,16 +1,39 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GUDLFT Registration</title>
-</head>
-<body>
-    <h1>Welcome to the GUDLFT Registration Portal!</h1>
-    Please enter your secretary email to continue:
-    <form action="showSummary" method="post">
+{% extends "base.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block header %}
+Welcome to the GUDLFT Registration Portal!
+{% endblock %}
+
+{% block content %}
+<form action="{{ url_for('showSummary') }}" method="post" class="my-4">
+    <div class="form-group">
         <label for="email">Email:</label>
-        <input type="email" name="email" id=""/>
-        <button type="submit">Enter</button>
-    </form>
-</body>
-</html>
+        <input type="email" name="email" id="email" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Enter</button>
+</form>
+
+<!-- Header for the points table -->
+<h2 class="mt-5">Club Points Overview</h2>
+<p class="text-muted">Below is a public, read-only table displaying the current available points for each club:</p>
+
+<!-- Table for displaying club points -->
+<table class="table table-bordered table-hover mt-2">
+    <thead class="thead-light">
+        <tr>
+            <th>Club Name</th>
+            <th>Points Available</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for club in clubs %}
+        <tr>
+            <td>{{ club.name }}</td>
+            <td>{{ club.points }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

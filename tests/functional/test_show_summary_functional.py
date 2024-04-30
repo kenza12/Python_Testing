@@ -22,6 +22,6 @@ def test_invalid_email_entry(browser, login):
     login('doesnotexist@test.com')
     # Wait for flash message to appear
     WebDriverWait(browser, 5).until(
-        EC.text_to_be_present_in_element((By.TAG_NAME, 'body'), "Sorry, that email wasn't found")
+        EC.text_to_be_present_in_element((By.TAG_NAME, 'body'), "Sorry, that email was not found.")
     )
-    assert "Sorry, that email wasn't found" in browser.page_source, "Expected error message not found"
+    assert "Sorry, that email was not found." in browser.page_source, "Expected error message not found"

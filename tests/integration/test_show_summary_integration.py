@@ -11,7 +11,7 @@ def test_show_summary_valid_email(client):
 
 def test_show_summary_invalid_email(client):
     """Test the /showSummary route with an invalid email."""
-    with client.application.app_context():
-        response = client.post('/showSummary', data={'email': 'nonexistentemail@test.com'})
-        assert response.status_code == 302
-        assert url_for('index') in response.headers['Location'], "Redirection to 'index' not found"
+
+    response = client.post('/showSummary', data={'email': 'nonexistentemail@test.com'})
+    assert response.status_code == 400
+    assert "Sorry, that email was not found." in response.get_data(as_text=True), "Expected error message not found"

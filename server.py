@@ -53,8 +53,7 @@ def showSummary():
         club = [club for club in clubs if club['email'] == request.form['email']][0]
         return render_template('welcome.html',club=club,competitions=competitions)
     except IndexError:
-        flash("Sorry, that email wasn't found.")
-        return redirect(url_for('index'))
+        return make_response(render_template('index.html', clubs=clubs, error="Sorry, that email was not found."), 400)
 
 @app.route('/book/<competition>/<club>')
 def book(competition,club):

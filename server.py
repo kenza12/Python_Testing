@@ -61,8 +61,9 @@ def showSummary():
 @app.route('/book/<competition>/<club>')
 def book(competition,club):
     """Render booking page if both club and competition are found."""
-    foundClub = [c for c in clubs if c['name'] == club][0]
-    foundCompetition = [c for c in competitions if c['name'] == competition][0]
+    foundClub = next((c for c in clubs if c['name'] == club), None)
+    foundCompetition = next((c for c in competitions if c['name'] == competition), None)
+    
     if foundClub and foundCompetition:
         return render_template('booking.html',club=foundClub,competition=foundCompetition)
     else:

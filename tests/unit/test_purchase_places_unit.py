@@ -82,14 +82,26 @@ def test_purchase_places_deduct_points(client, mock_energy_club, mock_load_clubs
     assert int(club['points']) == expected_points_after_booking, "The points should be deducted correctly after booking."
 
 
-def test_purchase_places_exceeding_available_places(client, mock_availability_limitation):
-    """Test to ensure that booking more places than available results in an error."""
-    
+@pytest.mark.parametrize(
+    "club_name, competition_name, requested_places, expected_status, expected_message",
+    [
+        # Happy Path: book less than available places
+        ("Simply Lift", "Avail Festival", 3, 200, 'Great-booking complete!'),
+        # Sad Path: book more than available places
+        ("Simply Lift", "Avail Festival", 5, 400, 'Cannot book more places than are available.')
+    ]
+)
+def test_purchase_places(client, mock_availability_limitation, club_name, competition_name, requested_places, expected_status, expected_message):
+    """
+    Test to ensure that the booking process behaves correctly when trying to book places, depending on the availability.
+    """
+    # Perform POST request to book places
     response = client.post('/purchasePlaces', data={
-        'club': 'Simply Lift',
-        'competition': 'Avail Festival',
-        'places': 5  # Attempting to book more places than available
+        'club': club_name,
+        'competition': competition_name,
+        'places': requested_places
     })
 
-    assert response.status_code == 400
-    assert 'Cannot book more places than are available.' in response.get_data(as_text=True)
+    # Check that the HTTP response and error message (if any) are correct
+    assert response.status_code == expected_status
+    assert expected_message in response.get_data(as_text=True), "The response message is not as expected"

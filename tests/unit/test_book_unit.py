@@ -8,8 +8,6 @@ import pytest
         ("Unknown Festival", "Unknown Club", 200, "Something went wrong-please try again")  # Unknown club and competition
     ]
 )
-
-
 def test_book_page_access(client, mock_iron_temple, competition, club, expected_status, expected_message):
     """
     Test to verify that the booking page responds correctly based on whether the specified club and competition exist or not.

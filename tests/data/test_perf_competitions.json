@@ -1,0 +1,29 @@
+{
+    "competitions": [
+        {
+            "name": "Spring Festival",
+            "date": "2026-03-27 10:00:00",
+            "numberOfPlaces": "1500"
+        },
+        {
+            "name": "Fall Classic",
+            "date": "2026-10-22 13:30:00",
+            "numberOfPlaces": "2000"
+        },
+        {
+            "name": "Historic Match",
+            "date": "2020-05-15 09:30:00",
+            "numberOfPlaces": "900"
+        },
+        {
+            "name": "Deducted Festival",
+            "date": "2027-04-28 10:00:00",
+            "numberOfPlaces": "1800"
+        },
+        {
+            "name": "Avail Festival",
+            "date": "2027-10-27 11:00:00",
+            "numberOfPlaces": "2500"
+        }
+    ]
+}

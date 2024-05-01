@@ -1,0 +1,34 @@
+{
+    "clubs": [
+        {
+            "name": "Simply Lift",
+            "email": "john@simplylift.co",
+            "points": "800"
+        },
+        {
+            "name": "Iron Temple",
+            "email": "admin@irontemple.com",
+            "points": "900"
+        },
+        {
+            "name": "She Lifts",
+            "email": "kate@shelifts.co.uk",
+            "points": "850"
+        },
+        {
+            "name": "Power Lifters",
+            "email": "jane@powerlifters.com",
+            "points": "780"
+        },
+        {
+            "name": "Max Muscle",
+            "email": "max@maxmuscle.com",
+            "points": "920"
+        },
+        {
+            "name": "Lift League",
+            "email": "league@lifleague.com",
+            "points": "890"
+        }
+    ]
+}

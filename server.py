@@ -32,6 +32,9 @@ app.debug = True
 if os.getenv('FLASK_ENV') == 'testing':
     app.config['CLUBS_DATA_PATH'] = 'tests/data/test_clubs.json'
     app.config['COMPETITIONS_DATA_PATH'] = 'tests/data/test_competitions.json'
+elif os.getenv('FLASK_ENV') == 'performance':
+    app.config['CLUBS_DATA_PATH'] = 'tests/data/test_perf_clubs.json'
+    app.config['COMPETITIONS_DATA_PATH'] = 'tests/data/test_perf_competitions.json'
 else:
     app.config['CLUBS_DATA_PATH'] = 'clubs.json'
     app.config['COMPETITIONS_DATA_PATH'] = 'competitions.json'

@@ -39,17 +39,29 @@ def test_purchase_places_limitation(client, mock_simply_lift):
     assert response.status_code == 400, "Expected HTTP status code 400"
 
 
-def test_purchase_places_past_competition(client, mock_iron_temple_with_past_competition):
-    """Test that booking a place in a past competition should fail."""
-
+@pytest.mark.parametrize(
+    "club_name, competition_name, requested_places, expected_status, expected_message",
+    [
+        # case of past competition
+        ("Iron Temple", "Historic Match", 1, 400, 'Cannot book places for past competitions'),
+        # case of current competition
+        ("Iron Temple", "Spring Festival", 1, 200, 'Great-booking complete!')
+    ]
+)
+def test_purchase_places_past_competition(client, mock_iron_temple_with_past_competition, club_name, competition_name, requested_places, expected_status, expected_message):
+    """
+    Test to ensure that trying to book places for past competitions fails, and that booking for current competitions succeeds.
+    """
+    # Perform POST request to book places
     response = client.post('/purchasePlaces', data={
-        'club': 'Iron Temple',
-        'competition': 'Historic Match',  # Use past competition
-        'places': 1
+        'club': club_name,
+        'competition': competition_name,
+        'places': requested_places
     })
-    
-    assert 'Cannot book places for past competitions' in response.get_data(as_text=True)
-    assert response.status_code == 400  # Expected HTTP status code 400
+
+    # Check that the HTTP response and error message (if any) are correct
+    assert response.status_code == expected_status
+    assert expected_message in response.get_data(as_text=True), "The response message is not as expected"
 
 
 def test_purchase_places_deduct_points(client, mock_energy_club, mock_load_clubs):

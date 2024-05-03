@@ -39,7 +39,10 @@ Each test type targets different aspects of the application:
 - **Unit tests** focus on the smallest parts of code, like functions and methods.
 - **Integration tests** verify that different modules or services used by your application interact well.
 - **Functional tests** assess the system as a whole, simulating user behavior to see if functionalities meet the specified requirements.
+- **Coverage tests** evaluate the percentage of the project's codebase that is executed when the tests run, helping identify untested parts of the application. It ensures that all functional aspects are covered by tests, enhancing confidence in the software's reliability.
 - **Performance tests** simulate user behavior at scale to assess the application's responsiveness and stability under load. These tests are crucial for identifying bottlenecks and ensuring that the application can handle expected traffic volumes.
+
+**Note:** Since the project includes functional tests with Selenium, it's important to restart the Flask server before running tests. This reset ensures that the application state is fresh, avoiding issues where tests might fail due to depleted resources like club points or competition places from previous test runs. This is crucial for ensuring that Selenium functional tests run correctly under a consistent starting state.
 
 ### Installation and Configuration
 
@@ -82,6 +85,18 @@ pytest -sv tests/
 ```
 
 **Note:** For functional tests involving Selenium, download the [GeckoDriver](https://github.com/mozilla/geckodriver/releases) that matches your browser's version and operating system. Place the downloaded geckodriver executable in the `tests/functional` directory. This is required for Selenium to interact with Firefox or other browser during tests.
+
+### Running Coverage Tests
+
+To check code coverage of your tests, ensure the testing environment variable **FLASK_ENV** is set to `testing` and start the Flask server using `flask run --port 8943`.
+
+To generate the coverage report, execute the following command from the root directory of the project:
+
+```bash
+pytest --cov=server --cov-report=html
+```
+
+This will run all the tests and generate a coverage report in HTML format. You can find the coverage report in `tests/coverage/htmlcov directory`. Open the `index.html` file within this directory in your web browser to view the detailed coverage report.
 
 ### Running Performance Tests with Locust
 

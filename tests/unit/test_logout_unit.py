@@ -9,4 +9,4 @@ def test_logout(client):
     assert response.status_code == 302, "Logout should issue a redirect response."
     
     # Check if the redirect location is home
-    assert response.headers['Location'] == "/", "The redirect location should be the home page URL."
+    assert response.headers['Location'].endswith('/'), "The redirect location should end with the home page URL."

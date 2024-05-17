@@ -1,6 +1,6 @@
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 import shutil
 
 # Set the path to include the root directory for easy imports
@@ -114,9 +114,13 @@ def mock_iron_temple_with_past_competition(mocker):
     mocked_clubs = [{'name': 'Iron Temple', 'email': 'admin@irontemple.com', 'points': 4}]
     mocker.patch('server.clubs', new=mocked_clubs)
 
+    # Get current date and future date
+    current_datetime = datetime.now()
+    future_datetime = current_datetime + timedelta(days=10)
+
     past_date = datetime(2020, 5, 15, 10, 0, 0)
     mocked_competitions = [
-        {'name': 'Spring Festival', 'numberOfPlaces': 5, 'date': '2026-03-27 10:00:00'},
+        {'name': 'Spring Festival', 'numberOfPlaces': 5, 'date': future_datetime.strftime('%Y-%m-%d %H:%M:%S')},
         {'name': 'Historic Match', 'numberOfPlaces': 10, 'date': past_date.strftime('%Y-%m-%d %H:%M:%S')}
     ]
     mocker.patch('server.competitions', new=mocked_competitions)

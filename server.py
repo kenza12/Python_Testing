@@ -40,6 +40,9 @@ with app.app_context():
     competitions = loadCompetitions()
     clubs = loadClubs()
 
+    # Sort competitions by date from most recent to oldest
+    competitions = sorted(competitions, key=lambda x: datetime.strptime(x['date'], '%Y-%m-%d %H:%M:%S'), reverse=True)
+
 @app.route('/')
 def index():
     """Render the main page with the club points table."""

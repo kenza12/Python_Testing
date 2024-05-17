@@ -146,10 +146,27 @@ def mock_availability_limitation(mocker):
 
 @pytest.fixture
 def navigate_to_booking(browser):
-    """Navigates to the booking page after logging in."""
+    """Navigates to the booking page for the 'Spring Festival' competition after logging in."""
     def _navigate():
-        WebDriverWait(browser, 3).until(EC.element_to_be_clickable((By.LINK_TEXT, 'Book Places')))
-        browser.find_element(By.LINK_TEXT, 'Book Places').click()
+        # Wait for the table to be visible
+        WebDriverWait(browser, 3).until(EC.visibility_of_element_located((By.TAG_NAME, 'table')))
+        
+        # Locate the table
+        table = browser.find_element(By.TAG_NAME, 'table')
+        
+        # Find all rows in the table
+        rows = table.find_elements(By.TAG_NAME, 'tr')
+        
+        # Iterate through the rows to find the one containing 'Spring Festival'
+        for row in rows:
+            if 'Spring Festival' in row.text:
+                # Once the correct row is found, find and click the 'Book Places' link within that row
+                book_button = row.find_element(By.LINK_TEXT, 'Book Places')
+                book_button.click()
+                break
+        else:
+            raise Exception("Could not find the 'Spring Festival' competition.")
+    
     return _navigate
 
 @pytest.fixture

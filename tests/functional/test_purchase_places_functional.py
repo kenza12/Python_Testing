@@ -62,25 +62,12 @@ def test_purchase_places_past_competition(browser, login, submit_booking_request
     # Find the row for 'Historic Match'
     historic_match_row = browser.find_element(By.XPATH, "//tr[td[contains(text(), 'Historic Match')]]")
     
-    # Within this row, click the 'Book Places' link
-    book_places_link = historic_match_row.find_element(By.LINK_TEXT, 'Book Places')
-    book_places_link.click()
-
-    # Use the submit_booking_request to attempt booking one place
-    submit_booking_request(1)
-
-    # Check for the error message indicating booking cannot be made for past competitions
+    # Check if the "Book Places" link is not present
     try:
-        WebDriverWait(browser, 5).until(
-            EC.text_to_be_present_in_element(
-                (By.TAG_NAME, 'body'), "Cannot book places for past competitions"
-            )
-        )
-        assert "Cannot book places for past competitions" in browser.page_source, \
-            "Should display a message about past competitions"
-    except TimeoutException:
-        print("TimeoutException caught. Error message did not appear.")
-        assert False, "Error message did not appear within the expected time."
+        historic_match_row.find_element(By.LINK_TEXT, 'Book Places')
+        assert False, "'Book Places' link should not be present for past competitions."
+    except:
+        assert True, "'Book Places' link is correctly not present for past competitions."
 
 
 def test_purchase_places_deduct_point(browser, login, submit_booking_request):

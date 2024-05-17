@@ -105,7 +105,7 @@ def mock_simply_lift(mocker):
     mocked_clubs = [{'name': 'Simply Lift', 'email': 'john@simplylift.co', 'points': 24}]
     mocker.patch('server.clubs', new=mocked_clubs)
 
-    mocked_competitions = [{'name': 'Fall Classic', 'numberOfPlaces': 30}]
+    mocked_competitions = [{'name': 'Fall Classic', 'numberOfPlaces': 30, 'date': '2026-12-31 10:00:00'}]
     mocker.patch('server.competitions', new=mocked_competitions)
 
 @pytest.fixture

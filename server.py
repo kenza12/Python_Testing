@@ -54,7 +54,21 @@ def showSummary():
     """Show a summary for the selected club, if it exists."""
     try:
         club = [club for club in clubs if club['email'] == request.form['email']][0]
-        return render_template('welcome.html',club=club,competitions=competitions)
+        current_timestamp = datetime.now()
+        
+        # Process competitions to determine if they are past or not
+        processed_competitions = []
+        for comp in competitions:
+            comp_date = datetime.strptime(comp['date'], '%Y-%m-%d %H:%M:%S')
+            is_past = comp_date < current_timestamp
+            processed_competitions.append({
+                'name': comp['name'],
+                'date': comp['date'],
+                'numberOfPlaces': comp['numberOfPlaces'],
+                'is_past': is_past
+            })
+
+        return render_template('welcome.html', club=club, competitions=processed_competitions)
     except IndexError:
         return make_response(render_template('index.html', clubs=clubs, error="Sorry, that email was not found."), 400)
 

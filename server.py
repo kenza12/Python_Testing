@@ -16,6 +16,7 @@ def loadCompetitions():
         listOfCompetitions = json.load(comps)['competitions']
         return listOfCompetitions
 
+
 def save_data(clubs, competitions):
     """Save updated clubs and competitions data to their respective JSON files."""
     with open(current_app.config['CLUBS_DATA_PATH'], 'w') as c:
@@ -23,6 +24,32 @@ def save_data(clubs, competitions):
     
     with open(current_app.config['COMPETITIONS_DATA_PATH'], 'w') as c:
         json.dump({'competitions': competitions}, c, indent=4)
+
+
+def process_competitions(competitions):
+    """
+    Processes a list of competitions to determine if each competition is in the past or future.
+    
+    Args:
+        competitions (list): A list of dictionaries, where each dictionary represents a competition
+                             
+    Returns:
+        list: A list of dictionaries, each containing the competition details along with an 'is_past' key
+              indicating whether the competition date is in the past (True) or future (False).
+    """
+    current_timestamp = datetime.now()
+    processed_competitions = []
+    for comp in competitions:
+        comp_date = datetime.strptime(comp['date'], '%Y-%m-%d %H:%M:%S')
+        is_past = comp_date < current_timestamp
+        processed_competitions.append({
+            'name': comp['name'],
+            'date': comp['date'],
+            'numberOfPlaces': comp['numberOfPlaces'],
+            'is_past': is_past
+        })
+    return processed_competitions
+
 
 app = Flask(__name__)
 app.secret_key = 'something_special'
@@ -54,20 +81,7 @@ def showSummary():
     """Show a summary for the selected club, if it exists."""
     try:
         club = [club for club in clubs if club['email'] == request.form['email']][0]
-        current_timestamp = datetime.now()
-        
-        # Process competitions to determine if they are past or not
-        processed_competitions = []
-        for comp in competitions:
-            comp_date = datetime.strptime(comp['date'], '%Y-%m-%d %H:%M:%S')
-            is_past = comp_date < current_timestamp
-            processed_competitions.append({
-                'name': comp['name'],
-                'date': comp['date'],
-                'numberOfPlaces': comp['numberOfPlaces'],
-                'is_past': is_past
-            })
-
+        processed_competitions = process_competitions(competitions)
         return render_template('welcome.html', club=club, competitions=processed_competitions)
     except IndexError:
         return make_response(render_template('index.html', clubs=clubs, error="Sorry, that email was not found."), 400)
@@ -79,10 +93,12 @@ def book(competition,club):
     foundCompetition = next((c for c in competitions if c['name'] == competition), None)
     
     if foundClub and foundCompetition:
-        return render_template('booking.html',club=foundClub,competition=foundCompetition)
+        processed_competitions = process_competitions([foundCompetition])
+        return render_template('booking.html',club=foundClub,competition=processed_competitions[0])
     else:
         flash("Something went wrong-please try again")
-        return render_template('welcome.html', club=club, competitions=competitions)
+        processed_competitions = process_competitions(competitions)
+        return render_template('welcome.html', club=club, competitions=processed_competitions)
 
 
 @app.route('/purchasePlaces',methods=['POST'])
@@ -129,7 +145,8 @@ def purchasePlaces():
     
     flash('Great-booking complete!')
     
-    return render_template('welcome.html', club=club, competitions=competitions)
+    processed_competitions = process_competitions(competitions)
+    return render_template('welcome.html', club=club, competitions=processed_competitions)
 
 @app.route('/logout')
 def logout():

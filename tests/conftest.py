@@ -96,7 +96,7 @@ def mock_iron_temple(mocker):
     mocked_clubs = [{'name': 'Iron Temple', 'email': 'admin@irontemple.com', 'points': 4}]
     mocker.patch('server.clubs', new=mocked_clubs)
 
-    mocked_competitions = [{'name': 'Spring Festival', 'numberOfPlaces': 5}]
+    mocked_competitions = [{'name': 'Spring Festival', 'numberOfPlaces': 5, 'date': '2028-12-31 10:00:00'}]
     mocker.patch('server.competitions', new=mocked_competitions)
 
 @pytest.fixture
@@ -137,7 +137,7 @@ def mock_energy_club(mocker):
     mocked_clubs = [{'name': 'Energy Club', 'email': 'contact@energyclub.com', 'points': 15}]
     mocker.patch('server.clubs', new=mocked_clubs)
 
-    mocked_competitions = [{'name': 'Energy Open', 'numberOfPlaces': 25}]
+    mocked_competitions = [{'name': 'Energy Open', 'numberOfPlaces': 25, 'date': '2028-12-31 10:00:00'}]
     mocker.patch('server.competitions', new=mocked_competitions)
 
 @pytest.fixture

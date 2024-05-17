@@ -138,14 +138,13 @@ def test_purchase_places_exceeding_available_places(browser, login, submit_booki
     # Attempt to book 5 places, which is more than available
     submit_booking_request(5)
 
-    # Check for error message
+    # Check for the browser's built-in validation message
     try:
+        # Wait for the validation message to appear on the input field
         WebDriverWait(browser, 5).until(
-            EC.text_to_be_present_in_element(
-                (By.TAG_NAME, 'body'),
-                "Cannot book more places than are available."
-            )
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'input:invalid'))
         )
-        assert "Cannot book more places than are available." in browser.page_source, "Should display a message about booking limitations"
+        invalid_input = browser.find_element(By.CSS_SELECTOR, 'input:invalid')
+        assert invalid_input is not None, "Should display a browser validation error for exceeding places"
     except TimeoutException:
-        assert False, "Error message did not appear when trying to book more places than available."
+        assert False, "Validation error did not appear when trying to book more places than available."

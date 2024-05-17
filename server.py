@@ -84,6 +84,10 @@ def purchasePlaces():
         if competition_date < datetime.now():
             return make_response(render_template('booking.html', club=club, competition=competition, error='Cannot book places for past competitions'), 400)
 
+    # Check for valid number of places
+    if placesRequired <= 0:
+        return make_response(render_template('booking.html', club=club, competition=competition, error='You must book at least 1 place.'), 400)
+
     # Cannot book more places than available
     if placesRequired > competition_places:
         error_message = "Cannot book more places than are available."
